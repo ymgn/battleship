@@ -1,0 +1,65 @@
+  <head>
+  <script type="text/javascript" src="../jquery/jquery-1.12.0.min.js"></script>
+  <style type="text/css">
+  .shiptd{
+    padding: 5px;
+  }
+  </style>
+</head>
+  <body>
+  <script type="text/javascript">
+    var i =0;
+    var text = "";
+    var map = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]];
+    var elem =  document.getElementById("content");
+
+    mainfunc();
+    // map 0�͉����Ȃ��@-1�͕ǁ@2�͑D���B���Ă��@3�̓~�X�@4�̓q�b�g�Ƃ���
+    // �E�����Ɖ������ɂ̂ݑD�͐L�т邽�ߕǂ��E�Ɖ��ɂ̂ݐݒu
+    function mainfunc(){
+      Editarray();
+      Editmap();
+    }
+
+    function rand(){
+      var rand = Math.floor( Math.random() * 9 )
+      return rand;
+    }
+
+    function Editarray(){
+      for(i=0;i<9;i++){
+        for(j=0;j<9;j++){
+          if(i<8&&j<8){
+            map[i][j] = 0;
+          }else{
+            map[i][j] = 1;
+          }
+        }
+      }
+    }
+
+    function Editmap(){
+      text += "<table border=1><thead><th colspan ='8'>���̓Q�[��</th></thead><tbody><tr>";
+
+      for(i=0;i<9;i++){
+        for(j=0;j<9;j++){
+          if(map[i][j]==0){
+            text += "<td id='0' class='shiptd'>A<input type='hidden' value='noship'></td>";
+          }else if(map[i][j] ==2){
+            text += "<td id='2' class='shiptd'>B<input type='hidden' value='ship'></td>";
+          }else if(map[i][j] == 1){
+            text += "</tr>";
+          }
+        }
+      }
+                text += "</tbody>";
+      document.body.innerHTML = text;
+    }
+
+    function Editship(){
+
+    }
+  </script>
+</body>
