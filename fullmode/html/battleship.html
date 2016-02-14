@@ -17,9 +17,10 @@
   padding-top: 60px;
 }
 
-.bullets_number{
+.bullets_number,.best_record{
   border: solid 1px;
   text-align: center;
+  margin-bottom: 10px;
 }
 .enemy_ship_list{
   text-align: center;
@@ -35,6 +36,11 @@
   background-color: yellow;
 }
 
+#retry,#openship{
+  border: solid 2px;
+  padding: 10px;
+}
+
 </style>
 </head>
 <body>
@@ -43,7 +49,7 @@
   var s_text = "";//スタートテキスト
   var text = ""; //戦闘画面表示
   var m_a_text = "別の場所を攻撃してください"; //miss_attack_text 同じ所を攻撃した場合
-  var o_text = "残弾数がなくなりました。</br>GAMEOVER</br><a id='openship' onclick='openship();'>敵戦艦の位置を見る</a></br><a id='retry' onclick='retry();'>もう一度遊ぶ</a>"; //ゲームオーバーテキスト
+  var o_text = "残弾数がなくなりました。</br>GAMEOVER</br><a id='openship' onclick='openship();'>敵戦艦の位置を見る</a></br></br><a id='retry' onclick='retry(0);'>もう一度遊ぶ</a>"; //ゲームオーバーテキスト
   var r_text = ""; //resultテキスト
   var ship1hp = 2;
   var ship2hp = 3;
@@ -68,6 +74,11 @@
   // map 0は何もなし　1は壁　2は子船が隠れてる 3は中船が隠れている　4は大船が隠れている　5はミス　6はヒットとする
   // 右方向と下方向にのみ船は伸びるため壁も右と下にのみ設置
   function mainfunc(){
+    ship1hp = 2;
+    ship2hp = 3;
+    ship3hp = 4;
+    bullets_num = 24;
+    endflag = 0;
     Editarray();
     Editship();
     Editmap();
@@ -84,6 +95,8 @@
       for(j=0;j<9;j++){
         if(i>7||j>7){
           map[i][j] = 1;
+        }else{
+          map[i][j] = 0;
         }
       }
     }
@@ -137,24 +150,24 @@
   }
 
   function Editmap(){
-    text += "<div class='battle_table'><table border=1><thead><th colspan ='8'>海戦ゲーム</th></thead><tbody><tr>";
+    text += "<div class='battle_table'><table border=1><thead><th colspan ='8'>海戦ゲーム "+battle_num+"戦目</th></thead><tbody><tr>";
 
     for(i=0;i<9;i++){
       for(j=0;j<9;j++){
         if(map[i][j]==0){
-          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,0);'><input type='hidden' value='noship' class='none noship'></td>";
+          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,0);'></td>";
         }else if(map[i][j] ==2){
-          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,2);'>A<input type='hidden' value='2ship' class='none'></td>";
+          text += "<td id='"+i+""+j+"' class='shiptd ship2' onclick='attack(this,2);'>A</td>";
         }else if(map[i][j] ==3){
-          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,3);'>B<input type='hidden' value='3ship' class='none'></td>";
+          text += "<td id='"+i+""+j+"' class='shiptd ship3' onclick='attack(this,3);'>B</td>";
         }else if(map[i][j] ==4){
-          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,4);'>C<input type='hidden' value='4ship' class='none'></td>";
+          text += "<td id='"+i+""+j+"' class='shiptd ship4' onclick='attack(this,4);'>C</td>";
         }else if(map[i][j] == 1){
           text += "</tr>";
         }
       }
     }
-    text += "</tbody></table></div><div class='battle_right'><div id='bullets_number' class='bullets_number'>残弾数：24</div><div class='enemy_ship_list'><div id='enemy_1'>駆逐艦：生存</div><div id='enemy_2'>巡洋艦：生存</div><div id='enemy_3'>大戦艦：生存</div></div><div id='message'></div></div>";
+    text += "</tbody></table></div><div class='battle_right'><div id='bullets_number' class='bullets_number'>残弾数：24　消費弾数：0</div><div class='best_record'>最高記録："+(24 - best_record)+"発でクリア</div><div class='enemy_ship_list'><div id='enemy_1'>駆逐艦：生存</div><div id='enemy_2'>巡洋艦：生存</div><div id='enemy_3'>大戦艦：生存</div></div><div id='message'></div></div>";
     document.body.innerHTML = text;
   }
 
@@ -171,7 +184,7 @@ function attack(el,tage) {
           document.getElementById('message').innerHTML = "";
       --bullets_num;
       //document.getElementsByClassName('.bullets_number').innerHTML = "弾数："+bullets_num;
-      document.getElementById('bullets_number').innerHTML = "残弾数："+bullets_num;
+      document.getElementById('bullets_number').innerHTML = "残弾数："+bullets_num+"　消費弾数："+(24-bullets_num);
       //alert(bullets_num);
 
       switch (tage) {
@@ -219,7 +232,7 @@ function attack(el,tage) {
     }
     if(ship1hp == 0 && ship2hp == 0 && ship3hp == 0){
       endflag = 1;
-      r_text ="ゲームクリア！</br>あなたは" + (24-bullets_num) + "発で敵艦隊を</br>殲滅することに成功しました。</br><a id='retry' onclick='retry();'>もう一度遊ぶ</a>";
+      r_text ="ゲームクリア！</br>あなたは" + (24-bullets_num) + "発で敵艦隊を</br>殲滅することに成功しました。</br></br><a id='retry' onclick='retry("+bullets_num+");'>もう一度遊ぶ</a>";
       document.getElementById('message').innerHTML = r_text;
     }
   }else{}
@@ -230,7 +243,12 @@ function openship(){
 }
 
 function retry(b_num){
-
+  if(best_record < b_num){
+    best_record = b_num;
+  }
+  battle_num++;
+  text = "";
+  mainfunc();
 }
 </script>
 
