@@ -1,65 +1,240 @@
-  <head>
-  <script type="text/javascript" src="../jquery/jquery-1.12.0.min.js"></script>
-  <style type="text/css">
-  .shiptd{
-    padding: 5px;
-  }
-  </style>
+<head>
+<style type="text/css">
+.shiptd{
+  height: 50px;
+  width: 50px;
+  text-align: center;
+}
+.none{display: none;}
+
+.battle_table{
+  float: left;
+  padding: 60px;
+}
+.battle_right{
+  float: left;
+  width: 230px;
+  padding-top: 60px;
+}
+
+.bullets_number{
+  border: solid 1px;
+  text-align: center;
+}
+.enemy_ship_list{
+  text-align: center;
+  border: solid 1px;
+  margin-top: 60px;
+  padding: 5px;
+}
+
+.miss_hit{
+  background-color: red;
+}
+.hit{
+  background-color: yellow;
+}
+
+</style>
 </head>
-  <body>
-  <script type="text/javascript">
-    var i =0;
-    var text = "";
-    var map = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]];
-    var elem =  document.getElementById("content");
+<body>
+<script type="text/javascript">
+  var i =0;
+  var s_text = "";//ƒXƒ^[ƒgƒeƒLƒXƒg
+  var text = ""; //í“¬‰æ–Ê•\¦
+  var m_a_text = "•Ê‚ÌêŠ‚ğUŒ‚‚µ‚Ä‚­‚¾‚³‚¢"; //miss_attack_text “¯‚¶Š‚ğUŒ‚‚µ‚½ê‡
+  var o_text = "c’e”‚ª‚È‚­‚È‚è‚Ü‚µ‚½B</br>GAMEOVER</br><a id='openship' onclick='openship();'>“GíŠÍ‚ÌˆÊ’u‚ğŒ©‚é</a></br><a id='retry' onclick='retry();'>‚à‚¤ˆê“x—V‚Ô</a>"; //ƒQ[ƒ€ƒI[ƒo[ƒeƒLƒXƒg
+  var r_text = ""; //resultƒeƒLƒXƒg
+  var ship1hp = 2;
+  var ship2hp = 3;
+  var ship3hp = 4;
+  var bullets_num = 24;
+  var endflag = 0; //ƒQ[ƒ€I—¹ŒãƒNƒŠƒbƒN‚Å‚«‚È‚¢‚æ‚¤‚É
+  var battle_num = 1; //‘±‚¯‚ÄƒvƒŒƒC‚µ‚½‚É‰½‰ñ–Ú‚©‚í‚©‚é‚æ‚¤‚É
+  var best_record = 0; //‘±‚¯‚ÄƒvƒŒƒC‚µ‚½Û‚ÌÅ‚‹L˜^‚ğc‚µ‚Ä‚¨‚­—p
 
-    mainfunc();
-    // map 0ï¿½Í‰ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½@-1ï¿½Í•Ç@2ï¿½Í‘Dï¿½ï¿½ï¿½Bï¿½ï¿½ï¿½Ä‚ï¿½ï¿½@3ï¿½Íƒ~ï¿½Xï¿½@4ï¿½Íƒqï¿½bï¿½gï¿½Æ‚ï¿½ï¿½ï¿½
-    // ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½Æ‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‚Ì‚İ‘Dï¿½ÍLï¿½Ñ‚é‚½ï¿½ß•Ç‚ï¿½ï¿½Eï¿½Æ‰ï¿½ï¿½É‚Ì‚İİ’u
-    function mainfunc(){
-      Editarray();
-      Editmap();
-    }
+  var map = [ [0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0],
+              [0,0,0,0,0,0,0,0,0]];
+  var elem =  document.getElementById("content");
 
-    function rand(){
-      var rand = Math.floor( Math.random() * 9 )
-      return rand;
-    }
+  mainfunc();
+  // map 0‚Í‰½‚à‚È‚µ@1‚Í•Ç@2‚Íq‘D‚ª‰B‚ê‚Ä‚é 3‚Í’†‘D‚ª‰B‚ê‚Ä‚¢‚é@4‚Í‘å‘D‚ª‰B‚ê‚Ä‚¢‚é@5‚Íƒ~ƒX@6‚Íƒqƒbƒg‚Æ‚·‚é
+  // ‰E•ûŒü‚Æ‰º•ûŒü‚É‚Ì‚İ‘D‚ÍL‚Ñ‚é‚½‚ß•Ç‚à‰E‚Æ‰º‚É‚Ì‚İİ’u
+  function mainfunc(){
+    Editarray();
+    Editship();
+    Editmap();
+  }
 
-    function Editarray(){
-      for(i=0;i<9;i++){
-        for(j=0;j<9;j++){
-          if(i<8&&j<8){
-            map[i][j] = 0;
-          }else{
-            map[i][j] = 1;
-          }
+  function rand(a){
+    //@‚O?–¢–
+    var rand = Math.floor( Math.random() * a )
+    return rand;
+  }
+
+  function Editarray(){
+    for(i=0;i<9;i++){
+      for(j=0;j<9;j++){
+        if(i>7||j>7){
+          map[i][j] = 1;
         }
       }
     }
+  }
 
-    function Editmap(){
-      text += "<table border=1><thead><th colspan ='8'>ï¿½ï¿½ï¿½ÍƒQï¿½[ï¿½ï¿½</th></thead><tbody><tr>";
-
-      for(i=0;i<9;i++){
-        for(j=0;j<9;j++){
-          if(map[i][j]==0){
-            text += "<td id='0' class='shiptd'>A<input type='hidden' value='noship'></td>";
-          }else if(map[i][j] ==2){
-            text += "<td id='2' class='shiptd'>B<input type='hidden' value='ship'></td>";
-          }else if(map[i][j] == 1){
-            text += "</tr>";
+  function Editship(){
+    var xy = 0;
+    var i = 0; //‘å‚«‚¢•¨‡‚É‘D‚ğ’u‚¯‚é‚©‚Ç‚¤‚©‚ÌŒ©‚é
+    var j = 0; //‘D‚Ìƒ}ƒX•ª‚ğŠm”F‚·‚é
+    var a = 0;
+    var b = 0;
+    endflag =0;
+    var flag=0;
+    //alert(a+"a|b"+b);
+    for(i=4;i>1;i--){
+      flag = 0;
+      while(flag<i){
+        xy = rand(2); //‚O‚Í‰¡’nkA‚P‚Íc‚ÉŒ©‚Ä‚¢‚­
+        flag = 0;
+        a = rand(8);
+        b = rand(8);
+        if(xy == 0){
+          for(j=0;j<i;j++){
+            if(map[a][b + j]==0){
+              ++flag;
+            }else{}
+          }
+        }else{
+          for(j=0;j<i;j++){
+            if(map[a + j][b]==0){
+              ++flag;
+            }else if(map[a + j][b]==1){
+              break;
+            }
           }
         }
+        //alert("íŠÍ‘å‚«‚³i:"+i+"map a:"+a+"b:"+b+"flag:"+flag);
       }
-                text += "</tbody>";
-      document.body.innerHTML = text;
+      //alert("xy:"+xy+" i:"+i+" a list:"+a+" b list:"+b+" flag:"+flag+"map"+map[a][b]);
+      if(xy == 0){
+        for(j=0;j<i;j++){
+          map[a][b+j] = i;
+        }
+      }else{
+        for(j=0;j<i;j++){
+          map[a+j][b] = i;
+        }
+      }
+      //alert("for i:"+i);
     }
+  }
 
-    function Editship(){
+  function Editmap(){
+    text += "<div class='battle_table'><table border=1><thead><th colspan ='8'>ŠCíƒQ[ƒ€</th></thead><tbody><tr>";
 
+    for(i=0;i<9;i++){
+      for(j=0;j<9;j++){
+        if(map[i][j]==0){
+          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,0);'><input type='hidden' value='noship' class='none noship'></td>";
+        }else if(map[i][j] ==2){
+          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,2);'>A<input type='hidden' value='2ship' class='none'></td>";
+        }else if(map[i][j] ==3){
+          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,3);'>B<input type='hidden' value='3ship' class='none'></td>";
+        }else if(map[i][j] ==4){
+          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,4);'>C<input type='hidden' value='4ship' class='none'></td>";
+        }else if(map[i][j] == 1){
+          text += "</tr>";
+        }
+      }
     }
-  </script>
+    text += "</tbody></table></div><div class='battle_right'><div id='bullets_number' class='bullets_number'>c’e”F24</div><div class='enemy_ship_list'><div id='enemy_1'>‹ì’€ŠÍF¶‘¶</div><div id='enemy_2'>„—mŠÍF¶‘¶</div><div id='enemy_3'>‘åíŠÍF¶‘¶</div></div><div id='message'></div></div>";
+    document.body.innerHTML = text;
+  }
+
+function attack(el,tage) {
+    var id = el.id;
+    var element = document.getElementById(id);
+    //alert(bullets_num);
+    //element.classList.add("hit");
+    if(endflag == 0){
+      if(bullets_num >0){
+        if(element.classList.contains('hit') || element.classList.contains('miss_hit')){
+          document.getElementById('message').innerHTML = m_a_text;
+        }else{
+          document.getElementById('message').innerHTML = "";
+      --bullets_num;
+      //document.getElementsByClassName('.bullets_number').innerHTML = "’e”F"+bullets_num;
+      document.getElementById('bullets_number').innerHTML = "c’e”F"+bullets_num;
+      //alert(bullets_num);
+
+      switch (tage) {
+        case 0:
+        //alert("miss:"+id);
+        element.classList.add('miss_hit');
+        element.innerHTML ="~";
+        break;
+
+        case 2:
+        //alert("‹ì’€ŠÍF"+id+"tage");
+        element.classList.add('hit');
+        element.innerHTML ="o";
+        --ship1hp;
+        if(ship1hp == 0){
+          document.getElementById('enemy_1').innerHTML = "‹ì’€ŠÍFŒ‚’¾";
+        }
+        break;
+
+        case 3:
+        element.classList.add('hit');
+        element.innerHTML ="o";
+        //alert("’†íŠÍF"+id);
+        --ship2hp;
+        if(ship2hp == 0){
+          document.getElementById('enemy_2').innerHTML = "„—mŠÍFŒ‚’¾";
+        }
+        break;
+
+        case 4:
+        element.classList.add('hit');
+        element.innerHTML ="o";
+        --ship3hp;
+        if(ship3hp==0){
+          document.getElementById('enemy_3').innerHTML = "‘åíŠÍFŒ‚’¾";
+        }
+        break;
+
+        default:
+      }
+    }
+    }else{
+      endflag = 1;
+      document.getElementById('message').innerHTML = o_text;
+    }
+    if(ship1hp == 0 && ship2hp == 0 && ship3hp == 0){
+      endflag = 1;
+      r_text ="ƒQ[ƒ€ƒNƒŠƒAI</br>‚ ‚È‚½‚Í" + (24-bullets_num) + "”­‚Å“GŠÍ‘à‚ğ</br>Ÿr–Å‚·‚é‚±‚Æ‚É¬Œ÷‚µ‚Ü‚µ‚½B</br><a id='retry' onclick='retry();'>‚à‚¤ˆê“x—V‚Ô</a>";
+      document.getElementById('message').innerHTML = r_text;
+    }
+  }else{}
+}
+
+function openship(){
+
+}
+
+function retry(b_num){
+
+}
+</script>
+
+<script type="text/javascript">
+</script>
+
 </body>
