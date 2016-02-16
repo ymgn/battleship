@@ -1,5 +1,17 @@
 <head>
 <style type="text/css">
+.ship2,#enemy_1{
+background-color: #f9c042;
+}
+
+.ship3,#enemy_2{
+  background-color: #f6a366;
+}
+
+.ship4,#enemy_3{
+  background-color: #f76842;
+}
+
 .shiptd{
   height: 50px;
   width: 50px;
@@ -49,7 +61,7 @@
   var s_text = "";//スタートテキスト
   var text = ""; //戦闘画面表示
   var m_a_text = "別の場所を攻撃してください"; //miss_attack_text 同じ所を攻撃した場合
-  var o_text = "残弾数がなくなりました。</br>GAMEOVER</br><a id='openship' onclick='openship();'>敵戦艦の位置を見る</a></br></br><a id='retry' onclick='retry(0);'>もう一度遊ぶ</a>"; //ゲームオーバーテキスト
+  var o_text = "残弾数がなくなりました。</br>GAMEOVER</br></br><a id='openship' onclick='openship();'>敵戦艦の位置を見る</a></br></br><a id='retry' onclick='retry(0);'>もう一度遊ぶ</a>"; //ゲームオーバーテキスト
   var r_text = ""; //resultテキスト
   var ship1hp = 2;
   var ship2hp = 3;
@@ -157,11 +169,11 @@
         if(map[i][j]==0){
           text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,0);'></td>";
         }else if(map[i][j] ==2){
-          text += "<td id='"+i+""+j+"' class='shiptd ship2' onclick='attack(this,2);'>A</td>";
+          text += "<td id='"+i+""+j+"' class='shiptd a' onclick='attack(this,2);'></td>";
         }else if(map[i][j] ==3){
-          text += "<td id='"+i+""+j+"' class='shiptd ship3' onclick='attack(this,3);'>B</td>";
+          text += "<td id='"+i+""+j+"' class='shiptd b' onclick='attack(this,3);'></td>";
         }else if(map[i][j] ==4){
-          text += "<td id='"+i+""+j+"' class='shiptd ship4' onclick='attack(this,4);'>C</td>";
+          text += "<td id='"+i+""+j+"' class='shiptd c' onclick='attack(this,4);'></td>";
         }else if(map[i][j] == 1){
           text += "</tr>";
         }
@@ -239,7 +251,20 @@ function attack(el,tage) {
 }
 
 function openship(){
+ var aele = document.getElementsByClassName('a');
+ var bele = document.getElementsByClassName('b');
+ var cele = document.getElementsByClassName('c');
+ var a = 0;
 
+  for(a=0;a<aele.length;a++){
+    aele[a].classList.add('ship2');
+  }
+  for(a=0;a<bele.length;a++){
+    bele[a].classList.add('ship3');
+  }
+  for(a=0;a<cele.length;a++){
+    cele[a].classList.add('ship4');
+ }
 }
 
 function retry(b_num){
@@ -252,7 +277,6 @@ function retry(b_num){
 }
 </script>
 
-<script type="text/javascript">
-</script>
+
 
 </body>
