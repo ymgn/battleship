@@ -50,7 +50,9 @@ background-color: #f9c042;
 
 #retry,#openship{
   border: solid 2px;
-  padding: 10px;
+  padding: 5px;
+  text-align: center;
+  margin-top: 15px;
 }
 
 </style>
@@ -61,7 +63,7 @@ background-color: #f9c042;
   var s_text = "";//スタートテキスト
   var text = ""; //戦闘画面表示
   var m_a_text = "別の場所を攻撃してください"; //miss_attack_text 同じ所を攻撃した場合
-  var o_text = "残弾数がなくなりました。</br>GAMEOVER</br></br><a id='openship' onclick='openship();'>敵戦艦の位置を見る</a></br></br><a id='retry' onclick='retry(0);'>もう一度遊ぶ</a>"; //ゲームオーバーテキスト
+  var o_text = "残弾数がなくなりました。</br>GAMEOVER<div id='openship' onclick='openship();'>敵戦艦の位置を見る</div><div id='retry' onclick='retry(0);'>もう一度遊ぶ</div>"; //ゲームオーバーテキスト
   var r_text = ""; //resultテキスト
   var ship1hp = 2;
   var ship2hp = 3;
@@ -213,6 +215,7 @@ function attack(el,tage) {
         --ship1hp;
         if(ship1hp == 0){
           document.getElementById('enemy_1').innerHTML = "駆逐艦：撃沈";
+          document.getElementById('enemy_1').style.backgroundColor = 'red';
         }
         break;
 
@@ -223,6 +226,7 @@ function attack(el,tage) {
         --ship2hp;
         if(ship2hp == 0){
           document.getElementById('enemy_2').innerHTML = "巡洋艦：撃沈";
+          document.getElementById('enemy_2').style.backgroundColor = 'red';        
         }
         break;
 
@@ -232,6 +236,7 @@ function attack(el,tage) {
         --ship3hp;
         if(ship3hp==0){
           document.getElementById('enemy_3').innerHTML = "大戦艦：撃沈";
+          document.getElementById('enemy_3').style.backgroundColor = 'red';
         }
         break;
 
