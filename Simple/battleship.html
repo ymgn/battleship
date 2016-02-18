@@ -1,15 +1,25 @@
 <head>
 <style type="text/css">
+body{
+  font-size: 16px;
+}
 .ship2,#enemy_1{
-background-color: #f9c042;
+background-color: #ffd7aa;
 }
 
 .ship3,#enemy_2{
-  background-color: #f6a366;
+  background-color: #ffb969;
+  margin-top: 5px;
 }
 
 .ship4,#enemy_3{
-  background-color: #f76842;
+  background-color: #f78342;
+  margin-top: 5px;
+}
+.strong{
+  text-align: center;
+  display: block;
+  font-size: 28px;
 }
 
 .shiptd{
@@ -25,7 +35,7 @@ background-color: #f9c042;
 }
 .battle_right{
   float: left;
-  width: 230px;
+  width: 235px;
   padding-top: 60px;
 }
 
@@ -34,26 +44,32 @@ background-color: #f9c042;
   text-align: center;
   margin-bottom: 10px;
 }
+
+.battle_right_center{
+  display: flex;
+  justify-content: space-around;
+}
+
+.giveup,.retry{
+  border: solid 1px;
+  margin: 10px 0px;
+  padding: 5px;
+}
+
 .enemy_ship_list{
   text-align: center;
   border: solid 1px;
-  margin-top: 60px;
+  margin-top: 10px;
   padding: 5px;
 }
 
 .miss_hit{
-  background-color: red;
+  background-color: rgb(75, 132, 228);
 }
 .hit{
   background-color: yellow;
 }
 
-#retry,#openship{
-  border: solid 2px;
-  padding: 5px;
-  text-align: center;
-  margin-top: 15px;
-}
 
 </style>
 </head>
@@ -63,8 +79,9 @@ background-color: #f9c042;
   var s_text = "";//スタートテキスト
   var text = ""; //戦闘画面表示
   var m_a_text = "別の場所を攻撃してください"; //miss_attack_text 同じ所を攻撃した場合
-  var o_text = "残弾数がなくなりました。</br>GAMEOVER<div id='openship' onclick='openship();'>敵戦艦の位置を見る</div><div id='retry' onclick='retry(0);'>もう一度遊ぶ</div>"; //ゲームオーバーテキスト
-  var r_text = ""; //resultテキスト
+  var o_text = "<strong class='strong'>GAME OVER</strong>敵戦艦の位置を表示します<div class='battle_right_center'><div class='retry' onclick='retry(0);'>次の戦いに挑む</div></div>"; //ゲームオーバーテキスト
+  var hit_text = "敵艦の一部に命中しました！"//ヒットした時のテキスト
+  var s_text = ""; //スタート時説明テキスト
   var ship1hp = 2;
   var ship2hp = 3;
   var ship3hp = 4;
@@ -72,6 +89,9 @@ background-color: #f9c042;
   var endflag = 0; //ゲーム終了後クリックできないように
   var battle_num = 1; //続けてプレイした時に何回目かわかるように
   var best_record = 0; //続けてプレイした際の最高記録を残しておく用
+  var aele = document.getElementsByClassName('a');
+  var bele = document.getElementsByClassName('b');
+  var cele = document.getElementsByClassName('c');
 
   var map = [ [0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0],
@@ -97,13 +117,13 @@ background-color: #f9c042;
     Editship();
     Editmap();
   }
-
+  //ランダムな数字を出す関数
   function rand(a){
     //　０?未満
     var rand = Math.floor( Math.random() * a )
     return rand;
   }
-
+  //マップの情報が入っている配列の下地を作成する
   function Editarray(){
     for(i=0;i<9;i++){
       for(j=0;j<9;j++){
@@ -115,7 +135,7 @@ background-color: #f9c042;
       }
     }
   }
-
+//マップの配列に敵艦の位置情報を配置する
   function Editship(){
     var xy = 0;
     var i = 0; //大きい物順に船を置けるかどうかの見る
@@ -162,10 +182,9 @@ background-color: #f9c042;
       //alert("for i:"+i);
     }
   }
-
+//マップの配列の情報からマップ自体を出力する
   function Editmap(){
     text += "<div class='battle_table'><table border=1><thead><th colspan ='8'>海戦ゲーム "+battle_num+"戦目</th></thead><tbody><tr>";
-
     for(i=0;i<9;i++){
       for(j=0;j<9;j++){
         if(map[i][j]==0){
@@ -181,84 +200,100 @@ background-color: #f9c042;
         }
       }
     }
-    text += "</tbody></table></div><div class='battle_right'><div id='bullets_number' class='bullets_number'>残弾数：24　消費弾数：0</div><div class='best_record'>最高記録："+(24 - best_record)+"発でクリア</div><div class='enemy_ship_list'><div id='enemy_1'>駆逐艦：生存</div><div id='enemy_2'>巡洋艦：生存</div><div id='enemy_3'>大戦艦：生存</div></div><div id='message'></div></div>";
+    text += "</tbody></table></div><div class='battle_right'><div id='bullets_number' class='bullets_number'>残弾数：24　消費弾数：0</div><div class='best_record'>最高記録："+(24 - best_record)+"発でクリア</div><div class='enemy_ship_list'><div id='enemy_1'>駆逐艦：生存</div><div id='enemy_2'>巡洋艦：生存</div><div id='enemy_3'>大戦艦：生存</div></div><div class='battle_right_center'><div class='giveup' onclick='giveup();'>戦略的撤退</div></div><div id='message'></div></div>";
     document.body.innerHTML = text;
   }
-
+//クリックした時に敵艦かどうかを判断し情報を更新する
 function attack(el,tage) {
-    var id = el.id;
-    var element = document.getElementById(id);
-    //alert(bullets_num);
-    //element.classList.add("hit");
-    if(endflag == 0){
+  var id = el.id;
+  var a = 0;
+  var element = document.getElementById(id);
+  if(endflag == 0){
+    if(element.classList.contains('hit') || element.classList.contains('miss_hit')){//同じ場所をクリックしたかどうか
+      document.getElementById('message').innerHTML = m_a_text;
+    }else{//同じ所をクリックしてない場合
       if(bullets_num >0){
-        if(element.classList.contains('hit') || element.classList.contains('miss_hit')){
-          document.getElementById('message').innerHTML = m_a_text;
-        }else{
-          document.getElementById('message').innerHTML = "";
-      --bullets_num;
+        --bullets_num;
+        document.getElementById('bullets_number').innerHTML = "残弾数："+bullets_num+"　消費弾数："+(24-bullets_num);
       //document.getElementsByClassName('.bullets_number').innerHTML = "弾数："+bullets_num;
-      document.getElementById('bullets_number').innerHTML = "残弾数："+bullets_num+"　消費弾数："+(24-bullets_num);
       //alert(bullets_num);
 
       switch (tage) {
         case 0:
         //alert("miss:"+id);
         element.classList.add('miss_hit');
-        element.innerHTML ="×";
+        document.getElementById('message').innerHTML = "ここには敵艦がいないようだ。";
+        element.innerHTML ="";
         break;
 
         case 2:
         //alert("駆逐艦："+id+"tage");
         element.classList.add('hit');
-        element.innerHTML ="o";
+        element.innerHTML ="爆";
+        document.getElementById('message').innerHTML = hit_text;
         --ship1hp;
         if(ship1hp == 0){
+
           document.getElementById('enemy_1').innerHTML = "駆逐艦：撃沈";
-          document.getElementById('enemy_1').style.backgroundColor = 'red';
+          document.getElementById('enemy_1').style.backgroundColor = 'rgb(255, 115, 115)';
+          for(a=0;a<aele.length;a++){
+            aele[a].style.backgroundColor = 'rgb(255, 115, 115)';
+            aele[a].innerHTML = "沈";
+          }
+          document.getElementById('message').innerHTML = "２発命中させて、駆逐艦を撃沈</br>することに成功しました";
         }
         break;
 
         case 3:
         element.classList.add('hit');
-        element.innerHTML ="o";
+        element.innerHTML ="爆";
+        document.getElementById('message').innerHTML = hit_text;
         //alert("中戦艦："+id);
         --ship2hp;
         if(ship2hp == 0){
           document.getElementById('enemy_2').innerHTML = "巡洋艦：撃沈";
-          document.getElementById('enemy_2').style.backgroundColor = 'red';        
+          document.getElementById('enemy_2').style.backgroundColor = 'rgb(252, 67, 67)';
+          for(a=0;a<bele.length;a++){
+            bele[a].style.backgroundColor = 'rgb(252, 67, 67)';
+            bele[a].innerHTML = "沈";
+          }
+          document.getElementById('message').innerHTML = "３発命中させて、巡洋艦を撃沈</br>することに成功しました！";
         }
         break;
 
         case 4:
         element.classList.add('hit');
-        element.innerHTML ="o";
+        element.innerHTML ="爆";
+        document.getElementById('message').innerHTML = hit_text;
         --ship3hp;
         if(ship3hp==0){
           document.getElementById('enemy_3').innerHTML = "大戦艦：撃沈";
           document.getElementById('enemy_3').style.backgroundColor = 'red';
+          for(a=0;a<cele.length;a++){
+            cele[a].style.backgroundColor = 'red';
+            cele[a].innerHTML = "沈";
+          }
+          document.getElementById('message').innerHTML = "４発命中させて、大戦艦を撃沈</br>させることに成功しました！";
         }
         break;
 
         default:
       }
     }
-    }else{
-      endflag = 1;
-      document.getElementById('message').innerHTML = o_text;
-    }
     if(ship1hp == 0 && ship2hp == 0 && ship3hp == 0){
       endflag = 1;
-      r_text ="ゲームクリア！</br>あなたは" + (24-bullets_num) + "発で敵艦隊を</br>殲滅することに成功しました。</br></br><a id='retry' onclick='retry("+bullets_num+");'>もう一度遊ぶ</a>";
+      r_text ="<strong class='strong'>ゲームクリア!</strong>あなたは" + (24-bullets_num) + "発で敵艦隊の全戦艦を</br>殲滅することに成功しました。<div class='battle_right_center'><div class='retry' onclick='retry("+bullets_num+");'>次の戦いに挑む</div></div>";
       document.getElementById('message').innerHTML = r_text;
+    }else if(bullets_num <=0){
+      endflag = 1;
+      document.getElementById('message').innerHTML = "残弾がなくなってしまった！</br>" + o_text;
+      openship();
     }
+  }
   }else{}
 }
 
 function openship(){
- var aele = document.getElementsByClassName('a');
- var bele = document.getElementsByClassName('b');
- var cele = document.getElementsByClassName('c');
  var a = 0;
 
   for(a=0;a<aele.length;a++){
@@ -270,6 +305,12 @@ function openship(){
   for(a=0;a<cele.length;a++){
     cele[a].classList.add('ship4');
  }
+}
+
+function giveup(){
+  endflag = 1;
+  document.getElementById('message').innerHTML = o_text;
+  openship();
 }
 
 function retry(b_num){
