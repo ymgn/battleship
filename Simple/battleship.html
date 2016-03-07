@@ -3,98 +3,95 @@
 body{
   font-size: 16px;
 }
-.strong{
+.strong{        /*ゲームクリアやゲームオーバーなどの文字強調用*/
   text-align: center;
   display: block;
   font-size: 28px;
 }
 
-.shiptd{
+.shiptd{       /*船が隠れているテーブルのtbody部分のCSS*/
   height: 50px;
   width: 50px;
   background-color: rgb(43, 220, 251);
   text-align: center;
 }
 
-.ship2,#enemy_1{
+.shipA,#enemy_1{        /*駆逐艦のテーマカラー　場所を表示する時付与*/
 background-color: #ffd7aa;
 }
 
-.ship3,#enemy_2{
+.shipB,#enemy_2{        /*巡洋艦のテーマカラー　場所を表示する時付与*/
   background-color: #ffb969;
   margin-top: 5px;
 }
 
-.ship4,#enemy_3{
+.shipC,#enemy_3{        /*大戦艦のテーマカラー　場所を表示する時付与*/
   background-color: #f78342;
   margin-top: 5px;
 }
 
-.none{display: none;}
-
-.battle_table{
+.battle_table{          /*対戦フィールドのテーブルの位置調整*/
   float: left;
   padding: 60px;
 }
-.battle_right{
+
+.miss_hit{          /*弾を外した際に表示される色*/
+  background-color: rgb(75, 132, 228);
+}
+.hit{           /*弾を当てた際に表示される色*/
+  background-color: yellow;
+}
+
+.battle_right{         /*対戦フィールド右の情報フィールド*/
   float: left;
   width: 235px;
   padding-top: 60px;
 }
 
-.bullets_number,.best_record{
+.bullets_number,.best_record{         /*情報フィールドの弾数と最高記録*/
   border: solid 1px;
   text-align: center;
   margin-bottom: 10px;
 }
 
-.battle_right_center{
-  display: flex;
-  justify-content: space-around;
-}
-
-.giveup,.retry{
-  border: solid 1px;
-  margin: 10px 0px;
-  padding: 5px;
-}
-
-.enemy_ship_list{
+.enemy_ship_list{           /*情報フィールドの敵の情報一覧*/
   text-align: center;
   border: solid 1px;
   margin-top: 10px;
   padding: 5px;
 }
 
-.miss_hit{
-  background-color: rgb(75, 132, 228);
-}
-.hit{
-  background-color: yellow;
+.battle_right_center{           /*情報フィールドのボタン配置用の場所*/
+  display: flex;
+  justify-content: space-around;
 }
 
-
+.giveup,.retry{         /*情報フィールドのギブアップ・リトライボタンのサイズなど*/
+  border: solid 1px;
+  margin: 10px 0px;
+  padding: 5px;
+}
 </style>
 </head>
 <body>
 <script type="text/javascript">
-  var i =0;
-  var s_text = "";//スタートテキスト
-  var text = ""; //戦闘画面表示
-  var m_a_text = "別の場所を攻撃してください"; //miss_attack_text 同じ所を攻撃した場合
+  var i = 0;        //forで宣言しなくていい用
+  var s_text = "";      //スタートテキスト
+  var text = "";        //画面をhtmlでアウトプットする用
+  var m_a_text = "別の場所を攻撃してください";       //miss_attack_text 同じ所を攻撃した場合
   var o_text = "<strong class='strong'>GAME OVER</strong>敵戦艦の位置を表示します<div class='battle_right_center'><div class='retry' onclick='retry(0);'>次の戦いに挑む</div></div>"; //ゲームオーバーテキスト
-  var hit_text = "敵艦の一部に命中しました！"//ヒットした時のテキスト
-  var s_text = ""; //スタート時説明テキスト
-  var ship1hp = 2;
-  var ship2hp = 3;
-  var ship3hp = 4;
-  var bullets_num = 24;
-  var endflag = 0; //ゲーム終了後クリックできないように
-  var battle_num = 1; //続けてプレイした時に何回目かわかるように
-  var best_record = 0; //続けてプレイした際の最高記録を残しておく用
-  var aele = document.getElementsByClassName('a');
-  var bele = document.getElementsByClassName('b');
-  var cele = document.getElementsByClassName('c');
+  var hit_text = "敵艦の一部に命中しました！";       //ヒットした時のテキスト
+  var s_text = "";      //スタート時説明テキスト
+  var shipAhp = 2;          //駆逐艦の体力（マス数）
+  var shipBhp = 3;          //巡洋艦の体力（マス数）
+  var shipChp = 4;          //大戦艦の体力（マス数）
+  var bullets_num = 24;     //弾数
+  var endflag = 0;          //ゲーム終了後（ゲームオーバー・ゲームクリア）にフィールドをクリックしても反応しないためのフラグ
+  var battle_num = 1;       //続けてプレイした時に何回目かわかるように
+  var best_record = 0;      //続けてプレイした際の最高記録を残しておく用
+  var aele = document.getElementsByClassName('a');          //駆逐艦の場所へのエレメント
+  var bele = document.getElementsByClassName('b');          //巡洋艦の場所へのエレメント
+  var cele = document.getElementsByClassName('c');          //大戦艦の場所へのエレメント
 
   var map = [ [0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0],
@@ -104,25 +101,25 @@ background-color: #ffd7aa;
               [0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,0,0],
-              [0,0,0,0,0,0,0,0,0]];
-  var elem =  document.getElementById("content");
+              [0,0,0,0,0,0,0,0,0]];         //バトルフィールド作成用の配列
+  var elem =  document.getElementById("content");       //バトルフィールドの場所へのエレメント
 
-  mainfunc();
-  // map 0は何もなし　1は壁　2は子船が隠れてる 3は中船が隠れている　4は大船が隠れている　5はミス　6はヒットとする
-  // 右方向と下方向にのみ船は伸びるため壁も右と下にのみ設置
+  mainfunc();       //メインのファンクション
+  // 右方向と下方向にのみ船は伸びるため壁は右と下にのみ設置
   function mainfunc(){
-    ship1hp = 2;
-    ship2hp = 3;
-    ship3hp = 4;
-    bullets_num = 24;
-    endflag = 0;
-    Editarray();
-    Editship();
-    Editmap();
+    shipAhp = 2;        //駆逐艦のHPを設定
+    shipBhp = 3;        //巡洋艦のHPを設定
+    shipChp = 4;        //大戦艦のHPを設定
+    bullets_num = 24;   //弾数の設定
+    endflag = 0;        //エンドフラグの初期化
+    Editarray();        //フィールド作成用の配列作成
+    Editship();         //敵艦を配置する
+    Editmap();          //フィールド用配列を元にhtmlを作成する
   }
   //ランダムな数字を出す関数
+  // a：ランダムな数字を出す時に数字の上限を決める引数
   function rand(a){
-    //　０?未満
+    //　０~aのランダムな数字を作成する
     var rand = Math.floor( Math.random() * a )
     return rand;
   }
@@ -131,85 +128,87 @@ background-color: #ffd7aa;
     for(i=0;i<9;i++){
       for(j=0;j<9;j++){
         if(i>7||j>7){
-          map[i][j] = 1;
+          map[i][j] = 1;        //敵艦配置時に壁を判別する用
         }else{
-          map[i][j] = 0;
+          map[i][j] = 0;        //敵艦を配置できるなにもない場所
         }
       }
     }
   }
 //マップの配列に敵艦の位置情報を配置する
   function Editship(){
-    var xy = 0;
-    var i = 0; //大きい物順に船を置けるかどうかの見る
-    var j = 0; //船のマス分を確認する
-    var a = 0;
-    var b = 0;
-    endflag =0;
-    var flag=0;
-    //alert(a+"a|b"+b);
-    for(i=4;i>1;i--){
-      flag = 0;
-      while(flag<i){
-        xy = rand(2); //０は横地k、１は縦に見ていく
-        flag = 0;
-        a = rand(8);
-        b = rand(8);
-        if(xy == 0){
-          for(j=0;j<i;j++){
-            if(map[a][b + j]==0){
-              ++flag;
-            }else{}
+    var xy = 0;     //０の場合横に配置、１の場合は縦に配置する
+    var i = 0;      //大戦艦、巡洋艦、駆逐艦の順番に配置したいマスの数を表す
+    var j = 0;      //船のマス分を確認する
+    var a = 0;      //縦の基準点用
+    var b = 0;      //横の基準点用
+    endflag =0;     //エンドフラグを初期化
+    var putflag=0;  //敵艦を配置する際
+    for(i=4;i>1;i--){       //配列内に大戦艦、巡洋艦、駆逐艦の順番で配置できる場所を探して配置する
+      putflag = 0;          //敵艦を配置する際に基準点から決めた縦か横の方向に何マス置けるか判断用
+      while(putflag<i){     //敵艦を配置したいマス分だけ配列に配置できるか比べる　putflag:おけるマス数　i:配置したいマス数
+        xy = rand(2);        //０の場合は横に、１の場合は縦に配置する
+        putflag = 0;
+        a = rand(8);         //縦の基準点を0~7の間のランダムな数字で決める
+        b = rand(8);         //横の基準点を0~7の間のランダムな数字で決める
+        if(xy == 0){        //0の場合横に見ていく
+          for(j=0;j<i;j++){         //配置したいマス分回す
+            if(map[a][b + j]==0){   //配置できるかどうか判断し可能ならputflagを増やす
+              ++putflag;
+          }else{      //配置したいマスに壁か既に配置した敵艦があった場合もう一度ランダムに基準点決める
+                break;
+            }
           }
-        }else{
-          for(j=0;j<i;j++){
-            if(map[a + j][b]==0){
-              ++flag;
-            }else if(map[a + j][b]==1){
+      }else{         //縦に見ていく
+          for(j=0;j<i;j++){         //配置したいマス分回す
+            if(map[a + j][b]==0){       //配置できるかどうか判断し可能ならputflagを増やす
+              ++putflag;
+          }else{       //配置したいマスに壁か既に配置した敵艦があった場合もう一度ランダムに基準点決める
               break;
             }
           }
         }
-        //alert("戦艦大きさi:"+i+"map a:"+a+"b:"+b+"flag:"+flag);
       }
-      //alert("xy:"+xy+" i:"+i+" a list:"+a+" b list:"+b+" flag:"+flag+"map"+map[a][b]);
-      if(xy == 0){
+      //配置したいマス分putflagがあれば設置する
+      if(xy == 0){      //横向きに配置したいマスのi分を配列に設置
         for(j=0;j<i;j++){
           map[a][b+j] = i;
         }
-      }else{
+    }else{        //縦向きに配置したいマスのi分を配列に設置
         for(j=0;j<i;j++){
           map[a+j][b] = i;
         }
       }
-      //alert("for i:"+i);
     }
   }
 //マップの配列の情報からマップ自体を出力する
   function Editmap(){
-    text += "<div class='battle_table'><table border=1><thead><th colspan ='8'>海戦ゲーム "+battle_num+"戦目</th></thead><tbody><tr>";
+    text += "<div class='battle_table'><table border=1><thead><th colspan ='8'>海戦ゲーム "+battle_num+"戦目</th></thead><tbody><tr>";         //バトルフィールドまでのhtmlを追加
     for(i=0;i<9;i++){
       for(j=0;j<9;j++){
-        if(map[i][j]==0){
-          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,0);'></td>";
-        }else if(map[i][j] ==2){
-          text += "<td id='"+i+""+j+"' class='shiptd a' onclick='attack(this,2);'></td>";
-        }else if(map[i][j] ==3){
-          text += "<td id='"+i+""+j+"' class='shiptd b' onclick='attack(this,3);'></td>";
-        }else if(map[i][j] ==4){
-          text += "<td id='"+i+""+j+"' class='shiptd c' onclick='attack(this,4);'></td>";
-        }else if(map[i][j] == 1){
-          text += "</tr>";
+        if(map[i][j]==0){       //敵がいない場合
+          text += "<td id='"+i+""+j+"' class='shiptd' onclick='attack(this,0);'></td>";         //敵のいない場合のtbodyを追加
+      }else if(map[i][j] ==2){        //駆逐艦がいる場合
+          text += "<td id='"+i+""+j+"' class='shiptd a' onclick='attack(this,2);'></td>";       //駆逐艦がいる場合のtbodyを追加
+      }else if(map[i][j] ==3){        //巡洋艦がいる場合
+          text += "<td id='"+i+""+j+"' class='shiptd b' onclick='attack(this,3);'></td>";       //巡洋艦がいる場合のtbodyを追加
+      }else if(map[i][j] ==4){        //大戦艦がいる場合
+          text += "<td id='"+i+""+j+"' class='shiptd c' onclick='attack(this,4);'></td>";       //大戦艦がいる場合のtbodyを追加
+      }else if(map[i][j] == 1){         //壁の場所に到達した場合
+          text += "</tr>";          //壁の場合<tr>を閉じる
         }
       }
     }
+    //フィールドのテーブルの中身を追加し終わった後、テーブルを閉じ情報フィールドを追加する
     text += "</tbody></table></div><div class='battle_right'><div id='bullets_number' class='bullets_number'>残弾数：24　消費弾数：0</div><div class='best_record'>最高記録："+(24 - best_record)+"発でクリア</div><div class='enemy_ship_list'><div id='enemy_1'>駆逐艦：生存</div><div id='enemy_2'>巡洋艦：生存</div><div id='enemy_3'>大戦艦：生存</div></div><div class='battle_right_center'><div class='giveup' onclick='giveup();'>戦略的撤退</div></div><div id='message'></div></div>";
-    document.body.innerHTML = text;
+    document.body.innerHTML = text;     //追加されたすべてのHTMLを書く
   }
 //クリックした時に敵艦かどうかを判断し情報を更新する
+//el    :選択されたエレメントが入る　
+//tage  :選択されたターゲットの種類が入る　０が敵がいない　２が駆逐艦　３が巡洋艦　４が大戦艦　
 function attack(el,tage) {
-  var id = el.id;
-  var a = 0;
+  var id = el.id;       //クリックした場所のIDを取得
+  var a = 0;            //for用
   var element = document.getElementById(id);
   if(endflag == 0){
     if(element.classList.contains('hit') || element.classList.contains('miss_hit')){//同じ場所をクリックしたかどうか
@@ -218,106 +217,100 @@ function attack(el,tage) {
       if(bullets_num >0){
         --bullets_num;
         document.getElementById('bullets_number').innerHTML = "残弾数："+bullets_num+"　消費弾数："+(24-bullets_num);
-      //document.getElementsByClassName('.bullets_number').innerHTML = "弾数："+bullets_num;
-      //alert(bullets_num);
+          switch (tage) {
+            case 0:         //敵がいなかった場合
+            element.classList.add('miss_hit');
+            document.getElementById('message').innerHTML = "ここには敵艦がいないようだ。";
+            element.innerHTML ="";
+            break;
 
-      switch (tage) {
-        case 0:
-        //alert("miss:"+id);
-        element.classList.add('miss_hit');
-        document.getElementById('message').innerHTML = "ここには敵艦がいないようだ。";
-        element.innerHTML ="";
-        break;
+            case 2:         //敵が駆逐艦の場合
+            element.classList.add('hit');
+            element.innerHTML ="爆";
+            document.getElementById('message').innerHTML = hit_text;
+            --shipAhp;
+            if(shipAhp == 0){
+              document.getElementById('enemy_1').innerHTML = "駆逐艦：撃沈";
+              document.getElementById('enemy_1').style.backgroundColor = 'rgb(255, 115, 115)';
+              for(a=0;a<aele.length;a++){
+                aele[a].style.backgroundColor = 'rgb(255, 115, 115)';
+                aele[a].innerHTML = "沈";
+              }
+              document.getElementById('message').innerHTML = "２発命中させて、駆逐艦を撃沈</br>することに成功しました";
+            }
+            break;
 
-        case 2:
-        //alert("駆逐艦："+id+"tage");
-        element.classList.add('hit');
-        element.innerHTML ="爆";
-        document.getElementById('message').innerHTML = hit_text;
-        --ship1hp;
-        if(ship1hp == 0){
+            case 3:         //敵が巡洋艦の場合
+            element.classList.add('hit');
+            element.innerHTML ="爆";
+            document.getElementById('message').innerHTML = hit_text;
+            --shipBhp;
+            if(shipBhp == 0){
+              document.getElementById('enemy_2').innerHTML = "巡洋艦：撃沈";
+              document.getElementById('enemy_2').style.backgroundColor = 'rgb(252, 67, 67)';
+              for(a=0;a<bele.length;a++){
+                bele[a].style.backgroundColor = 'rgb(252, 67, 67)';
+                bele[a].innerHTML = "沈";
+              }
+              document.getElementById('message').innerHTML = "３発命中させて、巡洋艦を撃沈</br>することに成功しました！";
+            }
+            break;
 
-          document.getElementById('enemy_1').innerHTML = "駆逐艦：撃沈";
-          document.getElementById('enemy_1').style.backgroundColor = 'rgb(255, 115, 115)';
-          for(a=0;a<aele.length;a++){
-            aele[a].style.backgroundColor = 'rgb(255, 115, 115)';
-            aele[a].innerHTML = "沈";
+            case 4:         //敵が大戦艦の場合
+            element.classList.add('hit');
+            element.innerHTML ="爆";
+            document.getElementById('message').innerHTML = hit_text;
+            --shipChp;
+            if(shipChp==0){
+              document.getElementById('enemy_3').innerHTML = "大戦艦：撃沈";
+              document.getElementById('enemy_3').style.backgroundColor = 'red';
+              for(a=0;a<cele.length;a++){
+                cele[a].style.backgroundColor = 'red';
+                cele[a].innerHTML = "沈";
+              }
+              document.getElementById('message').innerHTML = "４発命中させて、大戦艦を撃沈</br>させることに成功しました！";
+            }
+            break;
           }
-          document.getElementById('message').innerHTML = "２発命中させて、駆逐艦を撃沈</br>することに成功しました";
         }
-        break;
-
-        case 3:
-        element.classList.add('hit');
-        element.innerHTML ="爆";
-        document.getElementById('message').innerHTML = hit_text;
-        //alert("中戦艦："+id);
-        --ship2hp;
-        if(ship2hp == 0){
-          document.getElementById('enemy_2').innerHTML = "巡洋艦：撃沈";
-          document.getElementById('enemy_2').style.backgroundColor = 'rgb(252, 67, 67)';
-          for(a=0;a<bele.length;a++){
-            bele[a].style.backgroundColor = 'rgb(252, 67, 67)';
-            bele[a].innerHTML = "沈";
-          }
-          document.getElementById('message').innerHTML = "３発命中させて、巡洋艦を撃沈</br>することに成功しました！";
+        if(shipAhp == 0 && shipBhp == 0 && shipChp == 0){       //全部の敵のHPが0の場合ゲームクリア
+          endflag = 1;
+          r_text ="<strong class='strong'>ゲームクリア!</strong>あなたは" + (24-bullets_num) + "発で敵艦隊の全戦艦を</br>殲滅することに成功しました。<div class='battle_right_center'><div class='retry' onclick='retry("+bullets_num+");'>次の戦いに挑む</div></div>";
+          document.getElementById('message').innerHTML = r_text;
+      }else if(bullets_num <=0){          //全滅させる前に弾数がなくなった場合ゲームオーバー
+          endflag = 1;
+          document.getElementById('message').innerHTML = "残弾がなくなってしまった！</br>" + o_text;
+          openship();
         }
-        break;
-
-        case 4:
-        element.classList.add('hit');
-        element.innerHTML ="爆";
-        document.getElementById('message').innerHTML = hit_text;
-        --ship3hp;
-        if(ship3hp==0){
-          document.getElementById('enemy_3').innerHTML = "大戦艦：撃沈";
-          document.getElementById('enemy_3').style.backgroundColor = 'red';
-          for(a=0;a<cele.length;a++){
-            cele[a].style.backgroundColor = 'red';
-            cele[a].innerHTML = "沈";
-          }
-          document.getElementById('message').innerHTML = "４発命中させて、大戦艦を撃沈</br>させることに成功しました！";
-        }
-        break;
-
-        default:
-      }
-    }
-    if(ship1hp == 0 && ship2hp == 0 && ship3hp == 0){
-      endflag = 1;
-      r_text ="<strong class='strong'>ゲームクリア!</strong>あなたは" + (24-bullets_num) + "発で敵艦隊の全戦艦を</br>殲滅することに成功しました。<div class='battle_right_center'><div class='retry' onclick='retry("+bullets_num+");'>次の戦いに挑む</div></div>";
-      document.getElementById('message').innerHTML = r_text;
-    }else if(bullets_num <=0){
-      endflag = 1;
-      document.getElementById('message').innerHTML = "残弾がなくなってしまった！</br>" + o_text;
-      openship();
     }
   }
-  }else{}
 }
-
+//敵の位置を表示する
 function openship(){
  var a = 0;
 
-  for(a=0;a<aele.length;a++){
-    aele[a].classList.add('ship2');
+  for(a=0;a<aele.length;a++){       //駆逐艦の場所にテーマカラーのクラスを付与
+    aele[a].classList.add('shipA');
   }
-  for(a=0;a<bele.length;a++){
-    bele[a].classList.add('ship3');
+  for(a=0;a<bele.length;a++){       //巡洋艦の場所にテーマカラーのクラスを付与
+    bele[a].classList.add('shipB');
   }
-  for(a=0;a<cele.length;a++){
-    cele[a].classList.add('ship4');
+  for(a=0;a<cele.length;a++){       //大戦艦の場所にテーマカラーのクラスを付与
+    cele[a].classList.add('shipC');
  }
 }
-
+//敵の位置を表示して強制的にゲームオーバーにする
 function giveup(){
+    if(endflag<1){
   endflag = 1;
   document.getElementById('message').innerHTML = o_text;
   openship();
+  };
 }
-
+//プレイ回数と最高記録を引き継いで次のゲームを開始する
+//b_num:使用した弾数
 function retry(b_num){
-  if(best_record < b_num){
+  if(best_record < b_num){      //ベストレコードより使用した弾数が少なければ更新する?
     best_record = b_num;
   }
   battle_num++;
@@ -325,7 +318,4 @@ function retry(b_num){
   mainfunc();
 }
 </script>
-
-
-
 </body>
