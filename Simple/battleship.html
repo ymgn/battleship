@@ -62,8 +62,8 @@ background-color: #ffd7aa;
 }
 
 .battle_right_center{           /*情報フィールドのボタン配置用の場所*/
-  display: flex;
-  justify-content: space-around;
+  display: flex;        /*flexを適用する*/
+  justify-content: space-around;        /*均等割り付けする*/
 }
 
 .giveup,.retry{         /*情報フィールドのギブアップ・リトライボタンのサイズなど*/
@@ -229,7 +229,7 @@ function attack(el,tage) {
             element.innerHTML ="爆";
             document.getElementById('message').innerHTML = hit_text;
             --shipAhp;
-            if(shipAhp == 0){
+            if(shipAhp == 0){       //駆逐艦のHPが０になった時表示
               document.getElementById('enemy_1').innerHTML = "駆逐艦：撃沈";
               document.getElementById('enemy_1').style.backgroundColor = 'rgb(255, 115, 115)';
               for(a=0;a<aele.length;a++){
@@ -245,7 +245,7 @@ function attack(el,tage) {
             element.innerHTML ="爆";
             document.getElementById('message').innerHTML = hit_text;
             --shipBhp;
-            if(shipBhp == 0){
+            if(shipBhp == 0){       //巡洋艦のHPが０になった時表示
               document.getElementById('enemy_2').innerHTML = "巡洋艦：撃沈";
               document.getElementById('enemy_2').style.backgroundColor = 'rgb(252, 67, 67)';
               for(a=0;a<bele.length;a++){
@@ -261,7 +261,7 @@ function attack(el,tage) {
             element.innerHTML ="爆";
             document.getElementById('message').innerHTML = hit_text;
             --shipChp;
-            if(shipChp==0){
+            if(shipChp==0){     //大戦艦のHPが０になった時表示
               document.getElementById('enemy_3').innerHTML = "大戦艦：撃沈";
               document.getElementById('enemy_3').style.backgroundColor = 'red';
               for(a=0;a<cele.length;a++){
@@ -300,12 +300,12 @@ function openship(){
  }
 }
 //敵の位置を表示して強制的にゲームオーバーにする
-function giveup(){
+function giveup (){
     if(endflag<1){
-  endflag = 1;
-  document.getElementById('message').innerHTML = o_text;
-  openship();
-  };
+      endflag = 1;
+      document.getElementById('message').innerHTML = o_text;
+      openship();
+    };
 }
 //プレイ回数と最高記録を引き継いで次のゲームを開始する
 //b_num:使用した弾数
@@ -313,9 +313,9 @@ function retry(b_num){
   if(best_record < b_num){      //ベストレコードより使用した弾数が少なければ更新する?
     best_record = b_num;
   }
-  battle_num++;
-  text = "";
-  mainfunc();
+  battle_num++;         //試合数を増やす
+  text = "";            //表示するテキスト列を初期化する
+  mainfunc();           //もう一度メインファンクションを呼ぶ出す
 }
 </script>
 </body>
